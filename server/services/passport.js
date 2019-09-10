@@ -27,19 +27,15 @@ passport.use(
       proxy: true
     },
     // area to save a user to our database if it is a first time user
-    (accessToken, refreshToken, profile, done) => {
-      // promise
-      User.findOne({ googleID: profile.id }).then(existingUser => {
-        if (existingUser) {
-          // user already exists
-          done(null, existingUser);
-        } else {
-          // user does not exist - create new user
-          new User({ googleID: profile.id })
-            .save()
-            .then(user => done(null, user));
-        }
-      });
+    async (accessToken, refreshToken, profile, done) => {
+      const existingUser = await User.findOne({ googleID: profile.id });
+      if (existingUser) {
+        // user already exists
+        return done(null, existingUser);
+      }
+      // user does not exist - create new user
+      const user = await new User({ googleID: profile.id }).save();
+      done(null, user);
     }
   )
 );
