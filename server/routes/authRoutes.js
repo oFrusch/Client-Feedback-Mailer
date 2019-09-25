@@ -13,12 +13,19 @@ module.exports = app => {
   );
 
   // passport sees the "code" inside the URL and will handle the request for us
-  app.get("/auth/google/callback", passport.authenticate("google"));
+  app.get(
+    "/auth/google/callback",
+    passport.authenticate("google"),
+    // after authentication send user to surveys display page
+    (req, res) => {
+      res.redirect("/surveys");
+    }
+  );
 
   app.get("/api/logout", (req, res) => {
     req.logout();
     // send back 'undefined'/'null' because the user's session should be killed
-    res.send(req.user);
+    res.redirect("/");
   });
 
   app.get("/api/current_user", (req, res) => {
